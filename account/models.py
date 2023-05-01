@@ -3,14 +3,14 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.conf import settings
 
 
-class AccountManager(BaseUserManager, PermissionsMixin):
+class AccountManager(BaseUserManager):
     def create_user(self, username, password=None, **extra_fields):
         if username is None:
             raise TypeError('User must have username!')
 
         user = self.model(username=username, **extra_fields)
         user.set_password(password)
-        user.save(using=self._db)
+        user.save(using=self.db)
         return user
 
     def create_superuser(self, username, password=None, **extra_fields):
@@ -55,7 +55,7 @@ class Account(AbstractBaseUser):
     first_name = models.CharField(max_length=221, verbose_name='first_name', null=True)
     last_name = models.CharField(max_length=221, verbose_name='last_name', null=True)
     avatar = models.ImageField(upload_to='account_avatar/')
-    type = models.IntegerField(choices=TYPE)
+    type = models.IntegerField(choices=TYPE, null=True, blank=True)
     bio = models.TextField()
     city = models.ForeignKey(City, on_delete=models.CASCADE, null=True, blank=True)
     is_superuser = models.BooleanField(default=False, verbose_name='Super user')
@@ -65,13 +65,17 @@ class Account(AbstractBaseUser):
 
     objects = AccountManager()
 
-    EMAIL_FIELD = 'email'
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = []
 
     def __str__(self):
         return self.username
 
+    def has_module_perms(self, app_label):
+        return self.is_superuser
+
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
 
     @property
     def image_url(self):
@@ -80,14 +84,6 @@ class Account(AbstractBaseUser):
                 return f'{settings.LOCAL_BASE_URL}{self.avatar.url}'
             return f'{settings.PROD_BASE_URL}{self.avatar.url}'
         return None
-
-
-def user_post_save(instance, sender, created, *args, **kwargs):
-    if created:
-        Account.objects.create(user_id=instance.id)
-
-
-post_save.connect(user_post_save, sender=Account)
 
 
 class WorkHistory(models.Model):
