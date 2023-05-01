@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models.signals import post_save
-from account.models import Account
 from ckeditor.fields import RichTextField
+from django.conf import settings
 
 
 class Tag(models.Model):
@@ -12,7 +12,7 @@ class Tag(models.Model):
 
 
 class Blog(models.Model):
-    author = models.ForeignKey(Account, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=221)
     description = RichTextField()
     image = models.ImageField(upload_to='blog_image/')
@@ -31,7 +31,7 @@ class SubContent(models.Model):
 
 
 class Comment(models.Model):
-    author = models.ForeignKey(Account, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
     message = models.TextField()
     parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)

@@ -1,5 +1,5 @@
 from django.db import models
-from account.models import Account
+from django.conf import settings
 
 
 class Position(models.Model):
@@ -31,11 +31,10 @@ class Company(models.Model):
 
 
 class Job(models.Model):
-    author = models.ForeignKey(Account, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=221)
     description = models.TextField()
     position = models.ForeignKey(Position, on_delete=models.CASCADE)
-    deadline = models.CharField(max_length=221)
     company = models.ForeignKey(Company, on_delete=models.CASCADE)
     salary = models.DecimalField(decimal_places=3, max_digits=4, null=True, blank=True)
     types = models.ManyToManyField(Type)
@@ -48,5 +47,5 @@ class Job(models.Model):
 
 
 class Wishlist(models.Model):
-    author = models.ForeignKey(Account, on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
