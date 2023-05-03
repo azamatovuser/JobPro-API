@@ -24,7 +24,7 @@ class Blog(models.Model):
 
 
 class SubContent(models.Model):
-    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='subcontent')
     title = models.CharField(max_length=221)
     image = models.ImageField(upload_to='blog_image')
     description = RichTextField()
@@ -32,7 +32,7 @@ class SubContent(models.Model):
 
 class Comment(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='comments')
     message = models.TextField()
     parent_comment = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     top_level_comment_id = models.IntegerField(null=True, blank=True)
