@@ -34,7 +34,7 @@ class Country(models.Model):
 
 
 class City(models.Model):
-    country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, related_name='country')
     title = models.CharField(max_length=221)
 
 
@@ -57,7 +57,7 @@ class Account(AbstractBaseUser):
     avatar = models.ImageField(upload_to='account_avatar/')
     type = models.IntegerField(choices=TYPE, null=True, blank=True)
     bio = models.TextField()
-    city = models.ForeignKey(City, on_delete=models.CASCADE, null=True, blank=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, null=True, blank=True, related_name='city')
     is_superuser = models.BooleanField(default=False, verbose_name='Super user')
     is_staff = models.BooleanField(default=False, verbose_name='Staff user')
     is_active = models.BooleanField(default=True, verbose_name='Active user')
