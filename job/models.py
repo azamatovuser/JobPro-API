@@ -48,4 +48,4 @@ class Job(models.Model):
 
 class Wishlist(models.Model):
     author = models.ForeignKey(Account, on_delete=models.CASCADE)
-    job = models.ForeignKey(Job, on_delete=models.CASCADE)
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='job')

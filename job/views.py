@@ -1,6 +1,6 @@
 from rest_framework import generics
-from .serializers import JobSerializer, TypeSerializer, CategorySerializer, JobRetrieveSerializer
-from .models import Job, Type, Category
+from .serializers import JobSerializer, TypeSerializer, CategorySerializer, JobRetrieveSerializer, JobPostSerializer, WishlistSerializer
+from .models import Job, Type, Category, Wishlist
 
 
 class JobListAPIView(generics.ListAPIView):
@@ -25,3 +25,22 @@ class CategoryListAPIView(generics.ListAPIView):
     #  http://127.0.0.1:8000/job/category/list/
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+
+
+class JobPostAPIView(generics.CreateAPIView):
+    #  http://127.0.0.1:8000/job/post/
+    queryset = Job.objects.all()
+    serializer_class = JobPostSerializer
+
+
+
+class WishlistListAPIView(generics.ListAPIView):
+    #  http://127.0.0.1:8000/account/wishlist/
+    queryset = Wishlist.objects.all()
+    serializer_class = WishlistSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        author_id = self.request.user.id
+        return qs.filter(author_id=author_id)

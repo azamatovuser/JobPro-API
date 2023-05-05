@@ -13,3 +13,9 @@ class AccountListAPIView(generics.ListAPIView):
         if qs:
             return qs.filter(type=1)
         return qs
+
+
+class AccountRUDAPIView(generics.RetrieveUpdateDestroyAPIView):
+    #  http://127.0.0.1:8000/account/detail/<int:account_id>/
+    queryset = Account.objects.all()
+    serializer_class = AccountSerializer

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Account, City, Country
+from job.models import Wishlist
 
 
 class CountrySerializer(serializers.ModelSerializer):
