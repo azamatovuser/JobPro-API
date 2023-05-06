@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Job, Company, Position, Type, Category, Wishlist, ApplyJob
 from account.serializers import AccountSerializer, CitySerializer
+from rest_framework.exceptions import ValidationError
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -51,9 +52,9 @@ class JobPostSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
-        author = attrs.get['author']
-        if author.role == 1:
-            raise AuthenticationFailed('You dont have permission')
+        author = attrs.get('author')
+        if author.type == 1:
+            raise ValidationError('You dont have permission')
         return attrs
     def create(self, validated_data):
         request = self.context['request']
@@ -74,10 +75,13 @@ class WishlistSerializer(serializers.ModelSerializer):
 class ApplyJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplyJob
-        fields = '__all__'
+        fields = ['author', 'cv', 'message']
+        extra_kwargs = {
+            'author': {'required': False}
+        }
 
     def validate(self, attrs):
         author = attrs.get('author')
-        if not author.role == 1:
+        if not author.type == 1:
             raise ValidationError('You are not canditate!')
         return attrs

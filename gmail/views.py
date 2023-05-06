@@ -10,7 +10,8 @@ from main.models import Subscribe
 class GmailSendAPIView(APIView):
 
     def post(self, request):
-        message = request.POST.get('message')
+        message = request.data.get('message')
+        print(message)
         send_mail(
             'This is JobPro company',
             message,
