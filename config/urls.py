@@ -45,6 +45,7 @@ urlpatterns = [
     path('blog/', include('blog.urls')),
     path('account/', include('account.urls')),
     path('job/', include('job.urls')),
+    path('gmail/', include('gmail.urls')),
 ]
 
 if settings.DEBUG:

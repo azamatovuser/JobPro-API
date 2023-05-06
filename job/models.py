@@ -49,3 +49,9 @@ class Job(models.Model):
 class Wishlist(models.Model):
     author = models.ForeignKey(Account, on_delete=models.CASCADE)
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='job')
+
+
+class ApplyJob(models.Model):
+    author = models.ForeignKey(Account, on_delete=models.CASCADE)
+    cv = models.FileField(upload_to='cv_file/')
+    message = models.TextField()

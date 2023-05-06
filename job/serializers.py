@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Job, Company, Position, Type, Category, Wishlist
+from .models import Job, Company, Position, Type, Category, Wishlist, ApplyJob
 from account.serializers import AccountSerializer, CitySerializer
 
 
@@ -42,22 +42,42 @@ class JobRetrieveSerializer(serializers.ModelSerializer):
 
 class JobPostSerializer(serializers.ModelSerializer):
     company = CompanySerializer()
-    types = TypeSerializer(many=True)
-    city = CitySerializer()
+    types = TypeSerializer(read_only=True, many=True)
     class Meta:
         model = Job
-        fields = ['id', 'salary', 'title', 'company','city', 'types', 'description']
+        fields = ['id', 'author', 'salary', 'title', 'company', 'types', 'description']
+        extra_kwargs = {
+            'author': {'required': False},
+        }
 
-
-    # def create(self, validated_data):
-    #     request = self.context['request']
-    #     company = request['company']
-    #     print(company)
+    def validate(self, attrs):
+        author = attrs.get['author']
+        if author.role == 1:
+            raise AuthenticationFailed('You dont have permission')
+        return attrs
+    def create(self, validated_data):
+        request = self.context['request']
+        author = request.user
+        instance = super().create(**validated_data)
+        instance.author = author
+        return instance
 
 
 class WishlistSerializer(serializers.ModelSerializer):
-    author = AccountSerializer(read_only=True)
-    job = JobRetrieveSerializer(read_only=True,many=True)
+    author = AccountSerializer()
+    job = JobRetrieveSerializer()
     class Meta:
         model = Wishlist
         fields = ['id', 'author', 'job']
+
+
+class ApplyJobSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApplyJob
+        fields = '__all__'
+
+    def validate(self, attrs):
+        author = attrs.get('author')
+        if not author.role == 1:
+            raise ValidationError('You are not canditate!')
+        return attrs
