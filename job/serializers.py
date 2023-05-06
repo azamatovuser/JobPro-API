@@ -41,26 +41,27 @@ class JobRetrieveSerializer(serializers.ModelSerializer):
         fields = ['id', 'author', 'title', 'description', 'position', 'company', 'salary', 'types', 'category', 'is_active', 'created_date']
 
 
+
 class JobPostSerializer(serializers.ModelSerializer):
-    company = CompanySerializer()
+    company = CompanySerializer(read_only=True)
     types = TypeSerializer(read_only=True, many=True)
     class Meta:
         model = Job
-        fields = ['id', 'author', 'salary', 'title', 'company', 'types', 'description']
-        extra_kwargs = {
-            'author': {'required': False},
-        }
+        fields = ['id', 'author', 'title', 'description', 'salary', 'company', 'types']
 
     def validate(self, attrs):
-        author = attrs.get('author')
+        request = self.context['request']
+        author = request.user
         if author.type == 1:
             raise ValidationError('You dont have permission')
         return attrs
+
     def create(self, validated_data):
         request = self.context['request']
         author = request.user
-        instance = super().create(**validated_data)
+        instance = super().create(validated_data)
         instance.author = author
+        instance.save()
         return instance
 
 
@@ -84,4 +85,16 @@ class ApplyJobSerializer(serializers.ModelSerializer):
         author = attrs.get('author')
         if not author.type == 1:
             raise ValidationError('You are not canditate!')
+        return attrs
+
+
+class ApplyJobGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ApplyJob
+        fields = ['author', 'cv', 'message']
+
+    def validate(self, attrs):
+        author = attrs.get('author')
+        if not author.type == 0:
+            raise ValidationError('You are not HR!')
         return attrs

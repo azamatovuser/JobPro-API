@@ -1,8 +1,9 @@
 from rest_framework import generics
 from .serializers import JobSerializer, TypeSerializer, CategorySerializer, JobRetrieveSerializer, \
-    JobPostSerializer, WishlistSerializer, CitySerializer, ApplyJobSerializer
+    JobPostSerializer, WishlistSerializer, CitySerializer, ApplyJobSerializer, ApplyJobGetSerializer
 from .models import Job, Type, Category, Wishlist, ApplyJob
 from account.models import City
+from rest_framework import permissions
 
 
 class JobListAPIView(generics.ListAPIView):
@@ -57,6 +58,7 @@ class JobPostAPIView(generics.CreateAPIView):
     #  http://127.0.0.1:8000/job/post/
     queryset = Job.objects.all()
     serializer_class = JobPostSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 
@@ -74,3 +76,13 @@ class WishlistListAPIView(generics.ListAPIView):
 class ApplyJobListCreateAPIView(generics.ListCreateAPIView):
     queryset = ApplyJob.objects.all()
     serializer_class = ApplyJobSerializer
+
+
+class ApplyJobHRListAPIView(generics.ListAPIView):
+    queryset = ApplyJob.objects.all()
+    serializer_class = ApplyJobGetSerializer
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        job_id = self.kwargs.get('job_id')
+        return qs.filter(job_id=job_id)

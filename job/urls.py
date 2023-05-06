@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import JobListAPIView, TypeListAPIView, CategoryListAPIView, \
-    JobRUDAPIView, JobPostAPIView, CityListAPIView, ApplyJobListCreateAPIView
+    JobRUDAPIView, JobPostAPIView, CityListAPIView, ApplyJobListCreateAPIView, ApplyJobHRListAPIView
 
 
 urlpatterns = [
@@ -11,4 +11,5 @@ urlpatterns = [
     path('category/list/', CategoryListAPIView.as_view()),
     path('city/list/', CityListAPIView.as_view()),
     path('applyjob/', ApplyJobListCreateAPIView.as_view()),
+    path('applyjob_hr/list/', ApplyJobHRListAPIView.as_view()),
 ]
