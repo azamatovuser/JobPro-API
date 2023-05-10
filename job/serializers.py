@@ -92,9 +92,3 @@ class ApplyJobGetSerializer(serializers.ModelSerializer):
     class Meta:
         model = ApplyJob
         fields = ['author', 'cv', 'message']
-
-    def validate(self, attrs):
-        author = attrs.get('author')
-        if not author.type == 0:
-            raise ValidationError('You are not HR!')
-        return attrs

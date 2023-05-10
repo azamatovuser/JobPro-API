@@ -3,7 +3,7 @@ from .serializers import JobSerializer, TypeSerializer, CategorySerializer, JobR
     JobPostSerializer, WishlistSerializer, CitySerializer, ApplyJobSerializer, ApplyJobGetSerializer
 from .models import Job, Type, Category, Wishlist, ApplyJob
 from account.models import City
-from rest_framework import permissions
+from rest_framework import permissions, serializers
 
 
 class JobListAPIView(generics.ListAPIView):
@@ -81,8 +81,14 @@ class ApplyJobListCreateAPIView(generics.ListCreateAPIView):
 class ApplyJobHRListAPIView(generics.ListAPIView):
     queryset = ApplyJob.objects.all()
     serializer_class = ApplyJobGetSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         qs = super().get_queryset()
+        author = self.request.user
+        if not author.type == 0:
+            raise PermissionError('You are not HR!')
         job_id = self.kwargs.get('job_id')
+        if author.type == '1':
+            raise serializers.ValidationError("You aren't HR")
         return qs.filter(job_id=job_id)
